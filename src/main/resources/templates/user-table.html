@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous">
+    <script src="https://code.jquery.com/jquery-3.2.1.slim.min.js" integrity="sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN" crossorigin="anonymous"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js" integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q" crossorigin="anonymous"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js" integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl" crossorigin="anonymous"></script>
+    <title>Users Table</title>
+</head>
+<body>
+<h1> Users Table</h1>
+<table class="table table-bordered table-striped text-center">
+    <thead class="table-info">
+    <tr>
+        <th>Id</th>
+        <th>Name</th>
+        <th>Age</th>
+        <th>Email</th>
+        <th>Edit</th>
+        <th>Delete</th>
+    </tr>
+    </thead>
+    <tr>
+        <tbody>
+        <tr th:each="tuser : ${usersList}">
+            <td th:utext="${tuser.getId()}"></td>
+            <td th:utext="${tuser.getName()}"></td>
+            <td th:utext="${tuser.getAge()}"></td>
+            <td th:utext="${tuser.getEmail()}"></td>
+            <td>
+                <!-- Button trigger modal -->
+                <button type="submit"
+                        class="btn btn-primary"
+                        data-toggle="modal"
+                        th:attr="data-target='#changeModal'+${tuser.id}">
+                    Edit User
+                </button>
+
+                <!-- Modal -->
+                <div class="modal fade" th:attr="id='changeModal'+${tuser.id}" tabindex="-1" role="dialog" aria-labelledby="changeModalLabel" aria-hidden="true">
+                    <div class="modal-dialog" role="document">
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <h5 class="modal-title" id="changeModalLabel">Edit User</h5>
+                            </div>
+                            <div class="modal-body">
+                                <form th:attr="id='change-form'+${tuser.id}" action="#" th:action="@{user-table/{id}(id=${tuser.id})}" th:method="POST" th:object="${user}">
+
+                                    <div class="col-sm-6">
+                                        <label for="changeFirstName" class="form-label">First name</label>
+                                        <input type="text" th:field="*{name}" class="form-control" id="changeFirstName" th:placeholder="${tuser.getName()}" required>
+                                        <div class="invalid-feedback">
+                                            Valid first name is required.
+                                        </div>
+                                    </div>
+                                    <div class="col-sm-6">
+                                        <label for="changeAge" class="form-label" >Age</label>
+                                        <input type="text" th:field="*{age}" class="form-control" id="changeAge" th:placeholder="${tuser.getAge()}" pattern="[0-9]{1,3}" required>
+                                        <div class="invalid-feedback">
+                                            Valid Age is required.
+                                        </div>
+                                    </div>
+                                    <div class="col-6">
+                                        <label for="changeUserEmail" class="form-label">Email</label>
+                                        <input type="email" th:field="*{email}" class="form-control" id="changeUserEmail" th:placeholder="${tuser.email}" required>
+                                        <div class="invalid-feedback">
+                                            Please enter a valid email address for shipping updates.
+                                        </div>
+                                    </div>
+                                </form>
+                            </div>
+                            <div class="modal-footer">
+                                <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                                <button type="submit" th:attr="form='change-form'+${tuser.id}" class="btn btn-primary">Change</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+            </td>
+            <td>
+                <form th:method="DELETE" th:action="@{/user-table/{id}(id=${tuser.getId()})}">
+                    <input class="btn btn-danger rounded px-3" type="submit"  value="Delete">
+                </form>
+            </td>
+        </tbody>
+    </tr>
+</table>
+
+<!-- Button trigger modal -->
+<button type="button" class="btn btn-primary" data-toggle="modal" data-target="#exampleModal">
+    Create new User
+</button>
+
+<!-- Modal -->
+<div  class="modal fade" id="exampleModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="exampleModalLabel">Create User</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <form id="create-form" action="#" th:method="POST" th:action="@{/user-table}" th:object="${user}">
+                    <div class="col-sm-6">
+                        <label for="firstName" class="form-label">First name</label>
+                        <input type="text" class="form-control" th:field="*{name}" id="firstName" placeholder="Daniil" value="" required>
+                        <div class="invalid-feedback">
+                            Valid first name is required.
+                        </div>
+                    </div>
+                    <div class="col-sm-6">
+                        <label for="Age" class="form-label" >Age</label>
+                        <input type="text" th:field="*{age}" class="form-control" id="Age" placeholder="18" value="" required>
+                        <div class="invalid-feedback">
+                            Valid Age name is required.
+                        </div>
+                    </div>
+                    <div class="col-6">
+                        <label for="userEmail" class="form-label">Email</label>
+                        <input type="email" th:field="*{email}" class="form-control" id="userEmail" placeholder="you@example.com">
+                        <div class="invalid-feedback">
+                            Please enter a valid email address for shipping updates.
+                        </div>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                <button  type="submit" form="create-form" class="btn btn-primary">Add</button>
+            </div>
+        </div>
+    </div>
+</div>
+</body>
+</html>
